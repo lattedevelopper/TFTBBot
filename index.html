@@ -31,10 +31,10 @@
             letter-spacing: 1px;
         }
         .catalog {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
             gap: 24px;
-            justify-content: center;
+            justify-items: center;
         }
         .card {
             background: var(--card-dark);
@@ -85,7 +85,7 @@
         }
         @media (max-width: 600px) {
             .container { padding: 8px; }
-            .catalog { gap: 12px; }
+            .catalog { grid-template-columns: 1fr; gap: 12px; }
             .card { width: 100vw; min-width: 0; height: 160px; }
         }
     </style>
