@@ -5,21 +5,30 @@
     <title>Каталог услуг</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        :root {
+            --main-green: #22c55e;
+            --main-green-dark: #16a34a;
+            --bg-dark: #18181b;
+            --card-dark: #232326;
+            --text-main: #f3f4f6;
+            --text-secondary: #a1a1aa;
+        }
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%);
+            background: var(--bg-dark);
             margin: 0;
             padding: 0;
         }
         .container {
-            max-width: 700px;
+            max-width: 800px;
             margin: 40px auto;
             padding: 24px;
         }
         h1 {
             text-align: center;
-            color: #3b3b5c;
+            color: var(--main-green);
             margin-bottom: 32px;
+            letter-spacing: 1px;
         }
         .catalog {
             display: flex;
@@ -28,35 +37,37 @@
             justify-content: center;
         }
         .card {
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 4px 16px rgba(60,60,120,0.08);
-            padding: 24px 20px 20px 20px;
-            width: 220px;
+            background: var(--card-dark);
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(34,197,94,0.10);
+            width: 200px;
+            height: 200px;
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             transition: transform 0.15s, box-shadow 0.15s;
+            position: relative;
         }
         .card:hover {
-            transform: translateY(-4px) scale(1.03);
-            box-shadow: 0 8px 24px rgba(60,60,120,0.13);
+            transform: translateY(-6px) scale(1.04);
+            box-shadow: 0 8px 32px rgba(34,197,94,0.18);
         }
         .service-name {
-            font-size: 1.15rem;
+            font-size: 1.13rem;
             font-weight: 600;
-            color: #2d2d44;
-            margin-bottom: 12px;
+            color: var(--text-main);
+            margin-bottom: 10px;
             text-align: center;
         }
         .price {
             font-size: 1.1rem;
-            color: #4f46e5;
+            color: var(--main-green);
             font-weight: 700;
             margin-bottom: 18px;
         }
         .order-btn {
-            background: linear-gradient(90deg, #6366f1 0%, #818cf8 100%);
+            background: linear-gradient(90deg, var(--main-green) 0%, var(--main-green-dark) 100%);
             color: #fff;
             border: none;
             border-radius: 8px;
@@ -64,16 +75,18 @@
             font-size: 1rem;
             font-weight: 500;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.2s, box-shadow 0.2s;
             margin-top: auto;
+            box-shadow: 0 2px 8px rgba(34,197,94,0.10);
         }
         .order-btn:hover {
-            background: linear-gradient(90deg, #818cf8 0%, #6366f1 100%);
+            background: linear-gradient(90deg, var(--main-green-dark) 0%, var(--main-green) 100%);
+            box-shadow: 0 4px 16px rgba(34,197,94,0.18);
         }
         @media (max-width: 600px) {
             .container { padding: 8px; }
             .catalog { gap: 12px; }
-            .card { width: 100%; min-width: 0; }
+            .card { width: 100vw; min-width: 0; height: 160px; }
         }
     </style>
 </head>
