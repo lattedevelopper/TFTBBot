@@ -33,15 +33,16 @@
         .catalog {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 24px;
+            gap: 16px;
             justify-items: center;
         }
         .card {
             background: var(--card-dark);
             border-radius: 18px;
             box-shadow: 0 4px 24px rgba(34,197,94,0.10);
-            width: 200px;
-            height: 200px;
+            width: 90vw;
+            max-width: 180px;
+            height: 180px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -83,10 +84,14 @@
             background: linear-gradient(90deg, var(--main-green-dark) 0%, var(--main-green) 100%);
             box-shadow: 0 4px 16px rgba(34,197,94,0.18);
         }
-        @media (max-width: 600px) {
-            .container { padding: 8px; }
-            .catalog { grid-template-columns: 1fr; gap: 12px; }
-            .card { width: 100vw; min-width: 0; height: 160px; }
+        @media (min-width: 500px) {
+            .card {
+                width: 200px;
+                height: 200px;
+            }
+            .container {
+                padding: 24px;
+            }
         }
     </style>
 </head>
