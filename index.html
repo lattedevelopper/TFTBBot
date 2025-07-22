@@ -279,6 +279,73 @@
             cursor: pointer;
             z-index: 2;
         }
+        /* Страница услуги */
+        #service-page {
+            display: none;
+            max-width: 420px;
+            margin: 0 auto;
+            color: var(--text-main);
+            padding: 0 0 24px 0;
+        }
+        .service-view-img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 22px;
+            margin-bottom: 18px;
+        }
+        .service-view-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .service-view-title {
+            font-size: 1.18rem;
+            font-weight: 700;
+            flex: 1 1 auto;
+            margin-right: 10px;
+        }
+        .service-view-fav-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.7rem;
+            color: var(--main-green);
+            transition: color 0.18s;
+            padding: 0 2px;
+        }
+        .service-view-fav-btn.fav {
+            color: #e11d48;
+        }
+        .service-view-price {
+            color: var(--main-green);
+            font-size: 1.08rem;
+            font-weight: 600;
+            margin-bottom: 14px;
+        }
+        .service-view-desc {
+            font-size: 1.01rem;
+            color: var(--text-secondary);
+            margin-bottom: 18px;
+        }
+        .service-view-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            color: var(--main-green);
+            font-size: 1.01rem;
+            font-family: 'Montserrat', Arial, sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 18px 0 0 0;
+        }
+        .service-view-back svg {
+            width: 20px; height: 20px;
+            vertical-align: middle;
+        }
         @media (min-width: 500px) {
             .card {
                 width: 200px;
@@ -389,13 +456,65 @@
             modal.onclick = e => { if (e.target === modal) modal.remove(); };
         }
 
+        // --- Страница услуги ---
+        function showServicePage(service) {
+            // Скрыть все страницы
+            document.getElementById('catalog-page').style.display = 'none';
+            document.getElementById('search-page').style.display = 'none';
+            document.getElementById('fav-page').style.display = 'none';
+            document.getElementById('service-page').style.display = '';
+
+            // Заполнить страницу
+            document.getElementById('service-view-img').src = service.img;
+            document.getElementById('service-view-title').textContent = service.name;
+            document.getElementById('service-view-price').textContent = service.price;
+            document.getElementById('service-view-desc').textContent = SERVICE_DESCS[service.name] || '';
+
+            // Обновить состояние избранного
+            const favBtn = document.getElementById('service-view-fav-btn');
+            let favs = JSON.parse(localStorage.getItem('favs') || '[]');
+            if (favs.some(s => s.name === service.name)) {
+                favBtn.classList.add('fav');
+                favBtn.title = 'Убрать из избранного';
+            } else {
+                favBtn.classList.remove('fav');
+                favBtn.title = 'Добавить в избранное';
+            }
+            favBtn.onclick = function() {
+                let favs = JSON.parse(localStorage.getItem('favs') || '[]');
+                const idx = favs.findIndex(s => s.name === service.name);
+                if (idx === -1) {
+                    favs.unshift(service);
+                    favBtn.classList.add('fav');
+                } else {
+                    favs.splice(idx, 1);
+                    favBtn.classList.remove('fav');
+                }
+                localStorage.setItem('favs', JSON.stringify(favs));
+            };
+
+            // Назад
+            document.getElementById('service-view-back').onclick = function() {
+                // Вернуться на предыдущую страницу (каталог или поиск)
+                const navBtns = document.querySelectorAll('.nav-btn');
+                let active = Array.from(navBtns).find(btn => btn.classList.contains('active'));
+                let page = active ? active.dataset.page : 'catalog';
+                document.getElementById('service-page').style.display = 'none';
+                document.getElementById(page + '-page').style.display = '';
+            };
+        }
+
+        // Для поиска услуги по имени
+        function getServiceByName(name) {
+            return SERVICES.find(s => s.name === name) || { name, price: '', img: '', desc: '' };
+        }
+
         function attachCardClickHandlers(scope) {
             (scope || document).querySelectorAll('.card').forEach(card => {
                 card.onclick = function() {
                     const name = card.querySelector('.service-name')?.textContent || '';
-                    const price = card.querySelector('.price')?.textContent || '';
-                    const img = card.querySelector('.card-img')?.src || '';
-                    openServiceModal(name, price, img);
+                    const service = getServiceByName(name);
+                    showServicePage(service);
                 };
             });
         }
@@ -455,6 +574,18 @@
 </head>
 <body>
     <div class="container">
+        <div id="service-page">
+            <img id="service-view-img" class="service-view-img" src="" alt="Услуга">
+            <div class="service-view-title-row">
+                <span id="service-view-title" class="service-view-title"></span>
+                <button id="service-view-fav-btn" class="service-view-fav-btn" title="Добавить в избранное">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                </button>
+            </div>
+            <div id="service-view-price" class="service-view-price"></div>
+            <div id="service-view-desc" class="service-view-desc"></div>
+            <button id="service-view-back" class="service-view-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>Назад</button>
+        </div>
         <div id="catalog-page">
         <div class="banner-carousel">
             <div class="banner">
