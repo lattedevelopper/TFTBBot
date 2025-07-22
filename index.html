@@ -513,7 +513,13 @@
             (scope || document).querySelectorAll('.card').forEach(card => {
                 card.onclick = function() {
                     const name = card.querySelector('.service-name')?.textContent || '';
-                    const service = getServiceByName(name);
+                    const price = card.querySelector('.price')?.textContent || '';
+                    const img = card.querySelector('.card-img')?.src || '';
+                    const service = {
+                        name,
+                        price,
+                        img
+                    };
                     showServicePage(service);
                 };
             });
