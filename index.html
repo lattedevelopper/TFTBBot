@@ -209,6 +209,13 @@
             height: 16px;
             display: block;
         }
+        .search-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+            justify-items: center;
+            margin-top: 16px;
+        }
         @media (min-width: 500px) {
             .card {
                 width: 200px;
@@ -228,6 +235,9 @@
             .nav-btn svg {
                 width: 18px;
                 height: 18px;
+            }
+            .search-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
     </style>
@@ -252,15 +262,16 @@
                 resultsBlock.innerHTML = '<div style="color:var(--text-secondary);padding:24px 0 0 0;text-align:center;">Ничего не найдено</div>';
                 return;
             }
-            resultsBlock.innerHTML = filtered.map(s => `
-                <div class="card" style="width:100%;max-width:340px;margin:12px auto 0 auto;">
-                    <img class="card-img" src="${s.img}" alt="${s.name}">
-                    <div class="card-info">
-                        <span class="service-name">${s.name}</span>
-                        <span class="price">${s.price}</span>
+            resultsBlock.innerHTML = `<div class="search-grid">` +
+                filtered.map(s => `
+                    <div class="card">
+                        <img class="card-img" src="${s.img}" alt="${s.name}">
+                        <div class="card-info">
+                            <span class="service-name">${s.name}</span>
+                            <span class="price">${s.price}</span>
+                        </div>
                     </div>
-                </div>
-            `).join('');
+                `).join('') + `</div>`;
         }
         function saveRecentQuery(query) {
             if (!query.trim()) return;
