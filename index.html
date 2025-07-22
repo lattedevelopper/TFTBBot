@@ -464,11 +464,15 @@
             document.getElementById('fav-page').style.display = 'none';
             document.getElementById('service-page').style.display = '';
 
-            // Заполнить страницу
-            document.getElementById('service-view-img').src = service.img;
-            document.getElementById('service-view-title').textContent = service.name;
-            document.getElementById('service-view-price').textContent = service.price;
-            document.getElementById('service-view-desc').textContent = SERVICE_DESCS[service.name] || '';
+            // Заполнить страницу (очищаем и заполняем явно)
+            const imgEl = document.getElementById('service-view-img');
+            const titleEl = document.getElementById('service-view-title');
+            const priceEl = document.getElementById('service-view-price');
+            const descEl = document.getElementById('service-view-desc');
+            if (imgEl) imgEl.src = service.img || '';
+            if (titleEl) titleEl.textContent = service.name || '';
+            if (priceEl) priceEl.textContent = service.price || '';
+            if (descEl) descEl.textContent = SERVICE_DESCS[service.name] || '';
 
             // Обновить состояние избранного
             const favBtn = document.getElementById('service-view-fav-btn');
