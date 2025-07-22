@@ -13,9 +13,6 @@
             --card-dark: #232326;
             --text-main: #f3f4f6;
             --text-secondary: #a1a1aa;
-            --banner-bg1: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
-            --banner-bg2: linear-gradient(90deg, #38bdf8 0%, #0ea5e9 100%);
-            --banner-bg3: linear-gradient(90deg, #fbbf24 0%, #f59e42 100%);
             --nav-bg: #232326;
             --nav-active: #22c55e;
         }
@@ -30,21 +27,13 @@
             margin: 40px auto;
             padding: 24px;
         }
-        h1 {
-            text-align: center;
-            color: var(--main-green);
-            margin-bottom: 24px;
-            letter-spacing: 1px;
-            font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
-            font-weight: 700;
-        }
         /* Баннер-карусель */
         .banner-carousel {
             width: 100%;
             margin: 0 auto 28px auto;
             display: flex;
             overflow-x: auto;
-            gap: 18px;
+            gap: 22px;
             padding-bottom: 8px;
             scrollbar-width: none;
         }
@@ -52,56 +41,52 @@
             display: none;
         }
         .banner {
-            min-width: 270px;
-            max-width: 320px;
-            height: 90px;
-            border-radius: 18px;
+            min-width: 320px;
+            max-width: 400px;
+            height: 170px;
+            border-radius: 22px;
             color: #fff;
             display: flex;
-            align-items: center;
-            padding: 0 22px;
-            box-shadow: 0 2px 12px rgba(34,197,94,0.10);
+            align-items: flex-end;
+            justify-content: flex-start;
             position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(34,197,94,0.10);
             flex-shrink: 0;
+            background: #222;
         }
-        .banner-1 { background: var(--banner-bg1); }
-        .banner-2 { background: var(--banner-bg2); }
-        .banner-3 { background: var(--banner-bg3); color: #232326; }
+        .banner-img {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover;
+            z-index: 1;
+            filter: brightness(0.85) saturate(1.1);
+        }
         .banner-content {
-            flex: 1;
+            position: relative;
+            z-index: 2;
+            padding: 0 24px 20px 24px;
+            width: 100%;
             display: flex;
             flex-direction: column;
-            gap: 6px;
-        }
-        .banner-title {
-            font-size: 1.08rem;
-            font-weight: 700;
-            margin-bottom: 2px;
-        }
-        .banner-desc {
-            font-size: 0.97rem;
-            font-weight: 500;
-            opacity: 0.93;
+            align-items: flex-start;
         }
         .banner-btn {
-            margin-top: 6px;
-            background: rgba(0,0,0,0.13);
+            margin-top: 8px;
+            background: rgba(0,0,0,0.18);
             color: #fff;
             border: none;
-            border-radius: 7px;
-            padding: 5px 14px;
-            font-size: 0.93rem;
+            border-radius: 8px;
+            padding: 7px 18px;
+            font-size: 1rem;
             font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
             font-weight: 600;
             cursor: pointer;
             transition: background 0.2s;
-        }
-        .banner-3 .banner-btn {
-            background: #fff3;
-            color: #232326;
+            box-shadow: 0 2px 8px rgba(34,197,94,0.10);
         }
         .banner-btn:hover {
-            background: rgba(0,0,0,0.22);
+            background: rgba(0,0,0,0.32);
         }
         /* Каталог */
         .catalog {
@@ -204,37 +189,32 @@
                 padding: 24px;
             }
             .banner {
-                min-width: 340px;
-                max-width: 400px;
-                height: 110px;
-                font-size: 1.13rem;
+                min-width: 440px;
+                max-width: 540px;
+                height: 210px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Каталог услуг</h1>
         <div class="banner-carousel">
-            <div class="banner banner-1">
+            <div class="banner">
+                <img class="banner-img" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80" alt="Маникюр">
                 <div class="banner-content">
-                    <div class="banner-title">-50% на маникюр</div>
-                    <div class="banner-desc">Только до конца месяца! Запишись прямо сейчас.</div>
-                    <button class="banner-btn">Получить</button>
+                    <button class="banner-btn">-50% на маникюр</button>
                 </div>
             </div>
-            <div class="banner banner-2">
+            <div class="banner">
+                <img class="banner-img" src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80" alt="Стрижка">
                 <div class="banner-content">
-                    <div class="banner-title">Стрижка + укладка</div>
-                    <div class="banner-desc">Комплекс по выгодной цене — 1200 ₽</div>
-                    <button class="banner-btn">Подробнее</button>
+                    <button class="banner-btn">Стрижка + укладка</button>
                 </div>
             </div>
-            <div class="banner banner-3">
+            <div class="banner">
+                <img class="banner-img" src="https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&w=600&q=80" alt="Скидка новичкам">
                 <div class="banner-content">
-                    <div class="banner-title">Скидка новичкам</div>
-                    <div class="banner-desc">-20% на первое посещение для новых клиентов</div>
-                    <button class="banner-btn">Записаться</button>
+                    <button class="banner-btn">Скидка новичкам</button>
                 </div>
             </div>
         </div>
