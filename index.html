@@ -464,11 +464,17 @@
             document.getElementById('fav-page').style.display = 'none';
             document.getElementById('service-page').style.display = '';
 
-            // Заполнить страницу (очищаем и заполняем явно)
             const imgEl = document.getElementById('service-view-img');
             const titleEl = document.getElementById('service-view-title');
             const priceEl = document.getElementById('service-view-price');
             const descEl = document.getElementById('service-view-desc');
+            if (!service || !service.name) {
+                if (imgEl) imgEl.src = '';
+                if (titleEl) titleEl.textContent = '';
+                if (priceEl) priceEl.textContent = '';
+                if (descEl) descEl.textContent = 'Данные не найдены';
+                return;
+            }
             if (imgEl) imgEl.src = service.img || '';
             if (titleEl) titleEl.textContent = service.name || '';
             if (priceEl) priceEl.textContent = service.price || '';
@@ -524,6 +530,7 @@
                         price,
                         img
                     };
+                    console.log('Открытие услуги:', service);
                     showServicePage(service);
                 };
             });
