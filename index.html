@@ -2,25 +2,111 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Прайс-лист</title>
+    <title>Каталог услуг</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: Arial, sans-serif; background: #f7f7f7; }
-        .container { max-width: 400px; margin: 40px auto; background: #fff; border-radius: 8px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);}
-        h1 { text-align: center; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 8px; border-bottom: 1px solid #eee; }
-        th { background: #f0f0f0; }
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(120deg, #f8fafc 0%, #e0e7ff 100%);
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 24px;
+        }
+        h1 {
+            text-align: center;
+            color: #3b3b5c;
+            margin-bottom: 32px;
+        }
+        .catalog {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 24px;
+            justify-content: center;
+        }
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(60,60,120,0.08);
+            padding: 24px 20px 20px 20px;
+            width: 220px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .card:hover {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 8px 24px rgba(60,60,120,0.13);
+        }
+        .service-name {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: #2d2d44;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+        .price {
+            font-size: 1.1rem;
+            color: #4f46e5;
+            font-weight: 700;
+            margin-bottom: 18px;
+        }
+        .order-btn {
+            background: linear-gradient(90deg, #6366f1 0%, #818cf8 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: auto;
+        }
+        .order-btn:hover {
+            background: linear-gradient(90deg, #818cf8 0%, #6366f1 100%);
+        }
+        @media (max-width: 600px) {
+            .container { padding: 8px; }
+            .catalog { gap: 12px; }
+            .card { width: 100%; min-width: 0; }
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Прайс-лист</h1>
-        <table>
-            <tr><th>Услуга</th><th>Цена</th></tr>
-            <tr><td>Стрижка</td><td>1000 ₽</td></tr>
-            <tr><td>Маникюр</td><td>800 ₽</td></tr>
-            <tr><td>Педикюр</td><td>1200 ₽</td></tr>
-        </table>
+        <h1>Каталог услуг</h1>
+        <div class="catalog">
+            <div class="card">
+                <div class="service-name">Стрижка</div>
+                <div class="price">1000 ₽</div>
+                <button class="order-btn">Записаться</button>
+            </div>
+            <div class="card">
+                <div class="service-name">Маникюр</div>
+                <div class="price">800 ₽</div>
+                <button class="order-btn">Записаться</button>
+            </div>
+            <div class="card">
+                <div class="service-name">Педикюр</div>
+                <div class="price">1200 ₽</div>
+                <button class="order-btn">Записаться</button>
+            </div>
+            <div class="card">
+                <div class="service-name">Окрашивание волос</div>
+                <div class="price">2500 ₽</div>
+                <button class="order-btn">Записаться</button>
+            </div>
+            <div class="card">
+                <div class="service-name">Брови и ресницы</div>
+                <div class="price">700 ₽</div>
+                <button class="order-btn">Записаться</button>
+            </div>
+        </div>
     </div>
 </body>
 </html> 
