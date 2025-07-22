@@ -232,6 +232,60 @@
         }
     </style>
     <script>
+        // Каталог услуг для поиска
+        const SERVICES = [
+            { name: 'Стрижка', price: '1000 ₽', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80' },
+            { name: 'Маникюр', price: '800 ₽', img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80' },
+            { name: 'Педикюр', price: '1200 ₽', img: 'https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&w=400&q=80' },
+            { name: 'Окрашивание волос', price: '2500 ₽', img: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80' },
+            { name: 'Брови и ресницы', price: '700 ₽', img: 'https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80' }
+        ];
+        function renderSearchResults(query) {
+            const resultsBlock = document.getElementById('search-results');
+            const q = query.trim().toLowerCase();
+            if (!q) {
+                resultsBlock.innerHTML = '';
+                return;
+            }
+            const filtered = SERVICES.filter(s => s.name.toLowerCase().includes(q));
+            if (filtered.length === 0) {
+                resultsBlock.innerHTML = '<div style="color:var(--text-secondary);padding:24px 0 0 0;text-align:center;">Ничего не найдено</div>';
+                return;
+            }
+            resultsBlock.innerHTML = filtered.map(s => `
+                <div class="card" style="width:100%;max-width:340px;margin:12px auto 0 auto;">
+                    <img class="card-img" src="${s.img}" alt="${s.name}">
+                    <div class="card-info">
+                        <span class="service-name">${s.name}</span>
+                        <span class="price">${s.price}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+        function saveRecentQuery(query) {
+            if (!query.trim()) return;
+            let recent = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+            recent = recent.filter(q => q !== query);
+            recent.unshift(query);
+            if (recent.length > 5) recent = recent.slice(0, 5);
+            localStorage.setItem('recentSearches', JSON.stringify(recent));
+            renderRecentQueries();
+        }
+        function renderRecentQueries() {
+            const block = document.getElementById('recent-queries');
+            let recent = JSON.parse(localStorage.getItem('recentSearches') || '[]');
+            if (!recent.length) {
+                block.innerHTML = '<div style="color:var(--text-secondary);font-size:0.97rem;">Нет недавних запросов</div>';
+                return;
+            }
+            block.innerHTML = recent.map(q => `<button class="recent-query-btn">${q}</button>`).join(' ');
+            block.querySelectorAll('.recent-query-btn').forEach(btn => {
+                btn.onclick = () => {
+                    document.getElementById('search-input').value = btn.textContent;
+                    renderSearchResults(btn.textContent);
+                };
+            });
+        }
         document.addEventListener('DOMContentLoaded', function() {
             const navBtns = document.querySelectorAll('.nav-btn');
             const pages = {
@@ -244,6 +298,9 @@
                 pages[page].style.display = '';
                 navBtns.forEach(btn => btn.classList.remove('active'));
                 document.querySelector('.nav-btn[data-page="' + page + '"]').classList.add('active');
+                if (page === 'search') {
+                    renderRecentQueries();
+                }
             }
             navBtns.forEach(btn => {
                 btn.addEventListener('click', function() {
@@ -251,6 +308,26 @@
                 });
             });
             showPage('catalog');
+
+            // Поиск
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    renderSearchResults(this.value);
+                });
+                searchInput.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter') {
+                        saveRecentQuery(this.value);
+                    }
+                });
+            }
+            // Клик по кнопке поиска
+            const searchBtn = document.getElementById('search-btn');
+            if (searchBtn) {
+                searchBtn.addEventListener('click', function() {
+                    saveRecentQuery(searchInput.value);
+                });
+            }
         });
     </script>
 </head>
@@ -315,8 +392,16 @@
             </div>
         </div>
         </div>
-        <div id="search-page" style="display:none;">
-            <div style="color:var(--text-main);text-align:center;padding:40px 0 0 0;font-size:1.2rem;">Поиск (в разработке)</div>
+        <div id="search-page" style="display:none;max-width:420px;margin:0 auto;">
+            <div style="padding:24px 0 0 0;">
+                <div style="display:flex;gap:8px;align-items:center;">
+                    <input id="search-input" type="text" placeholder="Поиск услуги..." autocomplete="off" style="flex:1;padding:10px 14px;border-radius:8px;border:none;font-size:1.05rem;background:#232326;color:var(--text-main);outline:none;">
+                    <button id="search-btn" style="background:var(--main-green);color:#fff;border:none;border-radius:8px;padding:10px 18px;font-size:1.05rem;font-family:'Montserrat',Arial,sans-serif;cursor:pointer;">Найти</button>
+                </div>
+            </div>
+            <div style="margin:18px 0 8px 0;color:var(--text-secondary);font-size:0.97rem;">Недавние запросы:</div>
+            <div id="recent-queries" style="margin-bottom:18px;display:flex;flex-wrap:wrap;gap:8px;"></div>
+            <div id="search-results"></div>
         </div>
         <div id="fav-page" style="display:none;">
             <div style="color:var(--text-main);text-align:center;padding:40px 0 0 0;font-size:1.2rem;">Избранное (в разработке)</div>
