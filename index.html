@@ -346,6 +346,54 @@
             width: 20px; height: 20px;
             vertical-align: middle;
         }
+        /* Страницы отдельных услуг */
+        .service-detail-page {
+            display: none;
+            max-width: 420px;
+            margin: 0 auto;
+            color: var(--text-main);
+            padding: 0 0 24px 0;
+        }
+        .service-detail-img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            border-radius: 22px;
+            margin-bottom: 18px;
+        }
+        .service-detail-title {
+            font-size: 1.18rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .service-detail-price {
+            color: var(--main-green);
+            font-size: 1.08rem;
+            font-weight: 600;
+            margin-bottom: 14px;
+        }
+        .service-detail-desc {
+            font-size: 1.01rem;
+            color: var(--text-secondary);
+            margin-bottom: 18px;
+        }
+        .service-detail-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            color: var(--main-green);
+            font-size: 1.01rem;
+            font-family: 'Montserrat', Arial, sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 18px 0 0 0;
+        }
+        .service-detail-back svg {
+            width: 20px; height: 20px;
+            vertical-align: middle;
+        }
         @media (min-width: 500px) {
             .card {
                 width: 200px;
@@ -523,15 +571,41 @@
             (scope || document).querySelectorAll('.card').forEach(card => {
                 card.onclick = function() {
                     const name = card.querySelector('.service-name')?.textContent || '';
-                    const price = card.querySelector('.price')?.textContent || '';
-                    const img = card.querySelector('.card-img')?.src || '';
-                    const service = {
-                        name,
-                        price,
-                        img
-                    };
-                    console.log('Открытие услуги:', service);
-                    showServicePage(service);
+                    // Открываем соответствующую страницу услуги
+                    openServiceDetailPage(name);
+                };
+            });
+        }
+
+        function openServiceDetailPage(name) {
+            // Скрыть все страницы
+            document.getElementById('catalog-page').style.display = 'none';
+            document.getElementById('search-page').style.display = 'none';
+            document.getElementById('fav-page').style.display = 'none';
+            document.getElementById('service-page').style.display = 'none';
+            document.querySelectorAll('.service-detail-page').forEach(p => p.style.display = 'none');
+            // Показать нужную страницу
+            const id = {
+                'Стрижка': 'service-haircut',
+                'Маникюр': 'service-manicure',
+                'Педикюр': 'service-pedicure',
+                'Окрашивание волос': 'service-color',
+                'Брови и ресницы': 'service-brows',
+            }[name];
+            if (id && document.getElementById(id)) {
+                document.getElementById(id).style.display = '';
+            }
+        }
+
+        function attachServiceDetailBackHandlers() {
+            document.querySelectorAll('.service-detail-back').forEach(btn => {
+                btn.onclick = function() {
+                    // Вернуться на предыдущую страницу (каталог или поиск)
+                    const navBtns = document.querySelectorAll('.nav-btn');
+                    let active = Array.from(navBtns).find(btn => btn.classList.contains('active'));
+                    let page = active ? active.dataset.page : 'catalog';
+                    document.querySelectorAll('.service-detail-page').forEach(p => p.style.display = 'none');
+                    document.getElementById(page + '-page').style.display = '';
                 };
             });
         }
@@ -586,22 +660,47 @@
                 origRenderSearchResults(query);
                 attachCardClickHandlers(document.getElementById('search-results'));
             }
+            attachServiceDetailBackHandlers();
         });
     </script>
 </head>
 <body>
     <div class="container">
-        <div id="service-page">
-            <img id="service-view-img" class="service-view-img" src="" alt="Услуга">
-            <div class="service-view-title-row">
-                <span id="service-view-title" class="service-view-title"></span>
-                <button id="service-view-fav-btn" class="service-view-fav-btn" title="Добавить в избранное">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-                </button>
-            </div>
-            <div id="service-view-price" class="service-view-price"></div>
-            <div id="service-view-desc" class="service-view-desc"></div>
-            <button id="service-view-back" class="service-view-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>Назад</button>
+        <!-- Страницы отдельных услуг -->
+        <div id="service-haircut" class="service-detail-page">
+            <img class="service-detail-img" src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80" alt="Стрижка">
+            <div class="service-detail-title">Стрижка</div>
+            <div class="service-detail-price">1000 ₽</div>
+            <div class="service-detail-desc">Профессиональная стрижка для мужчин и женщин. Индивидуальный подход и современные техники. Вы получите стильный и аккуратный образ!</div>
+            <button class="service-detail-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>Назад</button>
+        </div>
+        <div id="service-manicure" class="service-detail-page">
+            <img class="service-detail-img" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80" alt="Маникюр">
+            <div class="service-detail-title">Маникюр</div>
+            <div class="service-detail-price">800 ₽</div>
+            <div class="service-detail-desc">Классический и аппаратный маникюр, покрытие гель-лаком. Красота и уход для ваших рук. Гарантия стойкости и аккуратности!</div>
+            <button class="service-detail-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>Назад</button>
+        </div>
+        <div id="service-pedicure" class="service-detail-page">
+            <img class="service-detail-img" src="https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&w=400&q=80" alt="Педикюр">
+            <div class="service-detail-title">Педикюр</div>
+            <div class="service-detail-price">1200 ₽</div>
+            <div class="service-detail-desc">Уход за стопами и ногтями, расслабляющие процедуры и идеальный результат. Ваши ножки будут ухоженными и красивыми!</div>
+            <button class="service-detail-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>Назад</button>
+        </div>
+        <div id="service-color" class="service-detail-page">
+            <img class="service-detail-img" src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80" alt="Окрашивание волос">
+            <div class="service-detail-title">Окрашивание волос</div>
+            <div class="service-detail-price">2500 ₽</div>
+            <div class="service-detail-desc">Современные техники окрашивания, бережный уход и стойкий цвет. Подчеркните свою индивидуальность!</div>
+            <button class="service-detail-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>Назад</button>
+        </div>
+        <div id="service-brows" class="service-detail-page">
+            <img class="service-detail-img" src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80" alt="Брови и ресницы">
+            <div class="service-detail-title">Брови и ресницы</div>
+            <div class="service-detail-price">700 ₽</div>
+            <div class="service-detail-desc">Коррекция, окрашивание, ламинирование бровей и ресниц для выразительного взгляда. Только лучшие материалы и мастера!</div>
+            <button class="service-detail-back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg>Назад</button>
         </div>
         <div id="catalog-page">
         <div class="banner-carousel">
