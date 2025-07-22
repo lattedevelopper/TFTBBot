@@ -13,13 +13,17 @@
             --card-dark: #232326;
             --text-main: #f3f4f6;
             --text-secondary: #a1a1aa;
-            --carousel-bg: #1e1e22;
+            --banner-bg1: linear-gradient(90deg, #22c55e 0%, #16a34a 100%);
+            --banner-bg2: linear-gradient(90deg, #38bdf8 0%, #0ea5e9 100%);
+            --banner-bg3: linear-gradient(90deg, #fbbf24 0%, #f59e42 100%);
+            --nav-bg: #232326;
+            --nav-active: #22c55e;
         }
         body {
             font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
             background: var(--bg-dark);
             margin: 0;
-            padding: 0;
+            padding: 0 0 70px 0; /* отступ под нижнее меню */
         }
         .container {
             max-width: 800px;
@@ -34,7 +38,8 @@
             font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
             font-weight: 700;
         }
-        .carousel-menu {
+        /* Баннер-карусель */
+        .banner-carousel {
             width: 100%;
             margin: 0 auto 28px auto;
             display: flex;
@@ -42,55 +47,63 @@
             gap: 18px;
             padding-bottom: 8px;
             scrollbar-width: none;
-            justify-content: flex-start;
         }
-        .carousel-menu::-webkit-scrollbar {
+        .banner-carousel::-webkit-scrollbar {
             display: none;
         }
-        .carousel-item {
+        .banner {
+            min-width: 270px;
+            max-width: 320px;
+            height: 90px;
+            border-radius: 18px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            padding: 0 22px;
+            box-shadow: 0 2px 12px rgba(34,197,94,0.10);
+            position: relative;
+            flex-shrink: 0;
+        }
+        .banner-1 { background: var(--banner-bg1); }
+        .banner-2 { background: var(--banner-bg2); }
+        .banner-3 { background: var(--banner-bg3); color: #232326; }
+        .banner-content {
+            flex: 1;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 7px;
-            background: none;
-            border: none;
-            outline: none;
-            cursor: pointer;
+            gap: 6px;
         }
-        .carousel-icon-btn {
-            width: 62px;
-            height: 62px;
-            border-radius: 50%;
-            background: var(--carousel-bg);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border: 2px solid var(--main-green);
-            transition: background 0.2s, border 0.2s;
-            box-shadow: 0 2px 8px rgba(34,197,94,0.07);
+        .banner-title {
+            font-size: 1.08rem;
+            font-weight: 700;
+            margin-bottom: 2px;
         }
-        .carousel-item.active .carousel-icon-btn,
-        .carousel-item:active .carousel-icon-btn,
-        .carousel-item:focus .carousel-icon-btn {
-            background: var(--main-green);
-            border-color: var(--main-green-dark);
+        .banner-desc {
+            font-size: 0.97rem;
+            font-weight: 500;
+            opacity: 0.93;
         }
-        .carousel-item.active .carousel-icon-btn svg,
-        .carousel-item:active .carousel-icon-btn svg,
-        .carousel-item:focus .carousel-icon-btn svg {
-            filter: brightness(0) invert(1);
-        }
-        .carousel-label {
-            color: var(--main-green);
-            font-size: 0.92rem;
-            font-weight: 600;
-            text-align: center;
-            margin-top: 2px;
-            font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
-        }
-        .carousel-item.active .carousel-label {
+        .banner-btn {
+            margin-top: 6px;
+            background: rgba(0,0,0,0.13);
             color: #fff;
+            border: none;
+            border-radius: 7px;
+            padding: 5px 14px;
+            font-size: 0.93rem;
+            font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
         }
+        .banner-3 .banner-btn {
+            background: #fff3;
+            color: #232326;
+        }
+        .banner-btn:hover {
+            background: rgba(0,0,0,0.22);
+        }
+        /* Каталог */
         .catalog {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -145,6 +158,43 @@
             background: linear-gradient(90deg, var(--main-green-dark) 0%, var(--main-green) 100%);
             box-shadow: 0 4px 16px rgba(34,197,94,0.18);
         }
+        /* Нижнее меню */
+        .bottom-nav {
+            position: fixed;
+            left: 0; right: 0; bottom: 0;
+            width: 100vw;
+            background: var(--nav-bg);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 56px;
+            z-index: 100;
+            box-shadow: 0 -2px 12px rgba(0,0,0,0.13);
+        }
+        .nav-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+            font-weight: 600;
+            background: none;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            transition: color 0.18s;
+        }
+        .nav-btn.active, .nav-btn:focus {
+            color: var(--nav-active);
+        }
+        .nav-btn svg {
+            margin-bottom: 2px;
+            width: 22px;
+            height: 22px;
+            display: block;
+        }
         @media (min-width: 500px) {
             .card {
                 width: 200px;
@@ -153,53 +203,40 @@
             .container {
                 padding: 24px;
             }
+            .banner {
+                min-width: 340px;
+                max-width: 400px;
+                height: 110px;
+                font-size: 1.13rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Каталог услуг</h1>
-        <div class="carousel-menu">
-            <button class="carousel-item active">
-                <span class="carousel-icon-btn">
-                    <!-- Маникюр SVG -->
-                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="7" y="14" width="18" height="10" rx="5" fill="#22c55e"/>
-                        <rect x="12" y="6" width="8" height="12" rx="4" fill="#a7f3d0"/>
-                    </svg>
-                </span>
-                <span class="carousel-label">-50% на маникюр</span>
-            </button>
-            <button class="carousel-item">
-                <span class="carousel-icon-btn">
-                    <!-- Стрижка SVG -->
-                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <ellipse cx="16" cy="20" rx="10" ry="6" fill="#22c55e"/>
-                        <rect x="13" y="6" width="6" height="14" rx="3" fill="#bbf7d0"/>
-                    </svg>
-                </span>
-                <span class="carousel-label">Стрижка + укладка</span>
-            </button>
-            <button class="carousel-item">
-                <span class="carousel-icon-btn">
-                    <!-- Педикюр SVG -->
-                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <ellipse cx="16" cy="22" rx="9" ry="5" fill="#22c55e"/>
-                        <rect x="14" y="7" width="4" height="15" rx="2" fill="#bbf7d0"/>
-                    </svg>
-                </span>
-                <span class="carousel-label">Педикюр + маникюр</span>
-            </button>
-            <button class="carousel-item">
-                <span class="carousel-icon-btn">
-                    <!-- Скидка SVG -->
-                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <circle cx="16" cy="16" r="13" fill="#22c55e"/>
-                        <text x="16" y="21" text-anchor="middle" font-size="16" fill="#fff" font-family="Montserrat, Arial" font-weight="bold">%</text>
-                    </svg>
-                </span>
-                <span class="carousel-label">Скидка новичкам</span>
-            </button>
+        <div class="banner-carousel">
+            <div class="banner banner-1">
+                <div class="banner-content">
+                    <div class="banner-title">-50% на маникюр</div>
+                    <div class="banner-desc">Только до конца месяца! Запишись прямо сейчас.</div>
+                    <button class="banner-btn">Получить</button>
+                </div>
+            </div>
+            <div class="banner banner-2">
+                <div class="banner-content">
+                    <div class="banner-title">Стрижка + укладка</div>
+                    <div class="banner-desc">Комплекс по выгодной цене — 1200 ₽</div>
+                    <button class="banner-btn">Подробнее</button>
+                </div>
+            </div>
+            <div class="banner banner-3">
+                <div class="banner-content">
+                    <div class="banner-title">Скидка новичкам</div>
+                    <div class="banner-desc">-20% на первое посещение для новых клиентов</div>
+                    <button class="banner-btn">Записаться</button>
+                </div>
+            </div>
         </div>
         <div class="catalog">
             <div class="card">
@@ -229,5 +266,19 @@
             </div>
         </div>
     </div>
+    <nav class="bottom-nav">
+        <button class="nav-btn active">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l9-7 9 7v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            Каталог
+        </button>
+        <button class="nav-btn">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Найти
+        </button>
+        <button class="nav-btn">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            Избранное
+        </button>
+    </nav>
 </body>
 </html> 
