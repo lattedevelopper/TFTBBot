@@ -51,7 +51,6 @@
             justify-content: flex-start;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 4px 24px rgba(34,197,94,0.10);
             flex-shrink: 0;
             background: #222;
         }
@@ -120,9 +119,10 @@
         .card-info {
             width: 100%;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin: 8px 0 2px 0;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: flex-start;
+            margin: 10px 0 0 0;
             padding: 0 10px;
         }
         .service-name {
@@ -135,15 +135,15 @@
             overflow: hidden;
             text-overflow: ellipsis;
             flex: 1 1 auto;
+            margin-bottom: 7px;
         }
         .price {
             font-size: 0.97rem;
             color: var(--main-green);
             font-weight: 500;
-            text-align: right;
+            text-align: left;
             font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
-            margin-left: 10px;
-            flex-shrink: 0;
+            margin: 0 0 8px 0;
         }
         .order-btn {
             background: linear-gradient(90deg, var(--main-green) 0%, var(--main-green-dark) 100%);
@@ -172,7 +172,7 @@
             display: flex;
             justify-content: space-around;
             align-items: center;
-            height: 48px;
+            height: 72px;
             z-index: 100;
             box-shadow: 0 -2px 12px rgba(0,0,0,0.13);
         }
@@ -182,7 +182,7 @@
             align-items: center;
             justify-content: center;
             color: var(--text-secondary);
-            font-size: 0.92rem;
+            font-size: 1.08rem;
             font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
             font-weight: 600;
             background: none;
@@ -195,9 +195,9 @@
             color: var(--nav-active);
         }
         .nav-btn svg {
-            margin-bottom: 1px;
-            width: 22px;
-            height: 22px;
+            margin-bottom: 4px;
+            width: 32px;
+            height: 32px;
             display: block;
         }
         @media (min-width: 500px) {
@@ -214,11 +214,11 @@
                 height: 210px;
             }
             .bottom-nav {
-                height: 56px;
+                height: 80px;
             }
             .nav-btn svg {
-                width: 28px;
-                height: 28px;
+                width: 38px;
+                height: 38px;
             }
         }
     </style>
@@ -252,7 +252,6 @@
                     <span class="service-name">Стрижка</span>
                     <span class="price">1000 ₽</span>
                 </div>
-                <button class="order-btn">Записаться</button>
             </div>
             <div class="card">
                 <img class="card-img" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80" alt="Маникюр">
@@ -260,7 +259,6 @@
                     <span class="service-name">Маникюр</span>
                     <span class="price">800 ₽</span>
                 </div>
-                <button class="order-btn">Записаться</button>
             </div>
             <div class="card">
                 <img class="card-img" src="https://images.unsplash.com/photo-1512428559087-560fa5ceab42?auto=format&fit=crop&w=400&q=80" alt="Педикюр">
@@ -268,7 +266,6 @@
                     <span class="service-name">Педикюр</span>
                     <span class="price">1200 ₽</span>
                 </div>
-                <button class="order-btn">Записаться</button>
             </div>
             <div class="card">
                 <img class="card-img" src="https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80" alt="Окрашивание волос">
@@ -276,7 +273,6 @@
                     <span class="service-name">Окрашивание волос</span>
                     <span class="price">2500 ₽</span>
                 </div>
-                <button class="order-btn">Записаться</button>
             </div>
             <div class="card">
                 <img class="card-img" src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=400&q=80" alt="Брови и ресницы">
@@ -284,7 +280,6 @@
                     <span class="service-name">Брови и ресницы</span>
                     <span class="price">700 ₽</span>
                 </div>
-                <button class="order-btn">Записаться</button>
             </div>
         </div>
     </div>
