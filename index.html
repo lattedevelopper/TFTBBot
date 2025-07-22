@@ -279,6 +279,70 @@
             cursor: pointer;
             z-index: 2;
         }
+        .modal-actions {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            z-index: 3;
+        }
+        .modal-more-btn {
+            background: rgba(34,197,94,0.12);
+            border: none;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.3rem;
+            color: var(--main-green);
+            margin-bottom: 4px;
+            transition: background 0.18s;
+        }
+        .modal-more-btn:hover {
+            background: rgba(34,197,94,0.22);
+        }
+        .modal-more-actions {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+            margin-bottom: 4px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px) scale(0.98);
+            transition: opacity 0.18s, transform 0.18s;
+        }
+        .modal-more-actions.open {
+            opacity: 1;
+            pointer-events: auto;
+            transform: none;
+        }
+        .modal-action-btn {
+            background: #232326;
+            border: none;
+            border-radius: 50%;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 1.3rem;
+            color: var(--main-green);
+            box-shadow: 0 2px 8px rgba(34,197,94,0.10);
+            transition: background 0.18s, color 0.18s;
+        }
+        .modal-action-btn.fav {
+            color: #e11d48;
+        }
+        .modal-action-btn:hover {
+            background: #2dd4bf22;
+        }
         /* Страница услуги */
         #service-page {
             display: none;
@@ -439,8 +503,22 @@
         function openServiceModal(name, price, img, desc) {
             let modal = document.createElement('div');
             modal.className = 'modal-bg';
+            // Проверяем избранное
+            let favs = JSON.parse(localStorage.getItem('favs') || '[]');
+            let isFav = favs.some(s => s.name === name);
             modal.innerHTML = `
                 <div class="modal">
+                    <div class="modal-actions">
+                        <button class="modal-more-btn" title="Ещё" tabindex="0">⋮</button>
+                        <div class="modal-more-actions">
+                            <button class="modal-action-btn modal-share-btn" title="Поделиться" tabindex="-1">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                            </button>
+                            <button class="modal-action-btn modal-fav-btn${isFav ? ' fav' : ''}" title="Избранное" tabindex="-1">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                            </button>
+                        </div>
+                    </div>
                     <button class="modal-close" title="Закрыть">×</button>
                     <img class="modal-img" src="${img}" alt="${name}">
                     <div class="modal-content">
@@ -453,6 +531,44 @@
             document.body.appendChild(modal);
             modal.querySelector('.modal-close').onclick = () => modal.remove();
             modal.onclick = e => { if (e.target === modal) modal.remove(); };
+
+            // Анимация и обработка кнопки "ещё"
+            const moreBtn = modal.querySelector('.modal-more-btn');
+            const moreActions = modal.querySelector('.modal-more-actions');
+            moreBtn.onclick = (e) => {
+                e.stopPropagation();
+                moreActions.classList.toggle('open');
+                // Фокус на первой кнопке
+                if (moreActions.classList.contains('open')) {
+                    const first = moreActions.querySelector('button');
+                    if (first) first.focus();
+                }
+            };
+            // Кнопка избранное
+            const favBtn = modal.querySelector('.modal-fav-btn');
+            favBtn.onclick = (e) => {
+                e.stopPropagation();
+                let favs = JSON.parse(localStorage.getItem('favs') || '[]');
+                const idx = favs.findIndex(s => s.name === name);
+                if (idx === -1) {
+                    favs.unshift({ name, price, img });
+                    favBtn.classList.add('fav');
+                } else {
+                    favs.splice(idx, 1);
+                    favBtn.classList.remove('fav');
+                }
+                localStorage.setItem('favs', JSON.stringify(favs));
+            };
+            // Кнопка поделиться
+            const shareBtn = modal.querySelector('.modal-share-btn');
+            shareBtn.onclick = (e) => {
+                e.stopPropagation();
+                if (navigator.share) {
+                    navigator.share({ title: name, text: `${name} — ${price}`, url: window.location.href });
+                } else {
+                    window.prompt('Скопируйте ссылку:', window.location.href);
+                }
+            };
         }
 
         // --- Страница услуги ---
