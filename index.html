@@ -100,6 +100,8 @@
             box-sizing: border-box;
             width: 100%;
             max-width: 420px;
+            padding-left: 6px;
+            padding-right: 6px;
         }
         .card {
             background: var(--card-dark);
@@ -114,6 +116,10 @@
             overflow: hidden;
             box-shadow: 0 4px 12px rgba(34,197,94,0.1);
             box-sizing: border-box;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
         }
         .card-img {
             width: 100%;
@@ -220,7 +226,7 @@
             width: 92vw;
             padding: 0 0 18px 0;
             box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-            color: var(--text-secondary); /* Исправлено с var(--text-main) на var(--text-secondary) для консистентности */
+            color: var(--text-secondary);
             position: relative;
             animation: modalIn 0.3s ease-in-out;
             box-sizing: border-box;
@@ -259,7 +265,7 @@
             font-weight: 700;
             margin: 0;
             flex-grow: 1;
-            color: var(--text-main); /* Исправлено для читаемости заголовка */
+            color: var(--text-main);
         }
         .modal-price {
             color: var(--main-green);
@@ -322,90 +328,83 @@
             50% { transform: scale(1.2); }
             100% { transform: scale(1); }
         }
-        #service-page {
+        #profile-page {
             display: none;
             max-width: 420px;
             margin: 0 auto;
             color: var(--text-main);
-            padding: 0 0 24px 0;
+            padding: 12px;
+            box-sizing: border-box;
+            text-align: center;
         }
-        .service-view-img {
-            width: 100%;
-            height: 220px;
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
             object-fit: cover;
-            border-radius: 22px;
-            margin-bottom: 18px;
-        }
-        .service-view-title-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-        .service-view-title {
-            font-size: 1.18rem;
-            font-weight: 700;
-            flex: 1 1 auto;
-            margin-right: 10px;
-        }
-        .service-view-fav-btn {
-            background: none;
-            border: none;
+            background: #333;
+            margin: 0 auto 16px auto;
+            display: block;
             cursor: pointer;
-            font-size: 1.7rem;
-            color: var(--main-green);
-            transition: color 0.18s;
-            padding: 0 2px;
+            transition: transform 0.2s;
         }
-        .service-view-fav-btn.fav {
-            color: #e11d48;
+        .profile-avatar:hover {
+            transform: scale(1.05);
         }
-        .service-view-price {
-            color: var(--main-green);
-            font-size: 1.08rem;
-            font-weight: 600;
-            margin-bottom: 14px;
-        }
-        .service-view-desc {
-            font-size: 1.01rem;
+        .profile-user-id {
             color: var(--text-secondary);
-            margin-bottom: 18px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
         }
-        .service-view-back {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+        .profile-favorites-btn {
             background: none;
             border: none;
             color: var(--main-green);
-            font-size: 1.01rem;
-            font-family: 'Montserrat', Arial, sans-serif;
+            font-size: 1.05rem;
             font-weight: 600;
             cursor: pointer;
-            margin: 18px 0 0 0;
+            text-align: center;
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            transition: background 0.2s;
         }
-        .service-view-back svg {
-            width: 20px; height: 20px;
-            vertical-align: middle;
+        .profile-favorites-btn:hover {
+            background: rgba(34, 197, 94, 0.1);
         }
         #favorites-page {
             display: none;
-            width: 100%;
-            padding: 0 12px;
+            max-width: 420px;
+            margin: 0 auto;
+            padding: 12px;
             box-sizing: border-box;
         }
         #favorites-page .favorites-grid {
-            width: 100%;
-            max-width: 420px;
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             gap: 14px;
+            justify-content: center;
         }
         #favorites-page .no-favorites {
             text-align: center;
             color: var(--text-secondary);
             font-size: 1.1rem;
             padding: 20px;
+        }
+        #search-page {
+            display: none;
+            max-width: 420px;
+            margin: 0 auto;
+            padding: 12px;
+            box-sizing: border-box;
+        }
+        #search-page .search-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            justify-items: center;
+            margin-top: 16px;
+            justify-content: center;
         }
         @media (max-width: 500px) {
             .card {
@@ -539,8 +538,13 @@
                 </div>
             </div>
             <div style="margin:18px 0 8px 0;color:var(--text-secondary);font-size:0.97rem;">Недавние запросы:</div>
-            <div id="recent-queries" style="margin-bottom:18px;display:flex;flex-wrap:wrap;gap:8px;"></div>
+            <div id="recent-queries" style="margin-bottom:18px;display:flex;gap:8px;"></div>
             <div id="search-results"></div>
+        </div>
+        <div id="profile-page" style="display:none;">
+            <img id="profile-avatar" class="profile-avatar" src="https://via.placeholder.com/120?text=Аватар" alt="Аватар">
+            <div id="profile-user-id" class="profile-user-id">ID: <span id="user-id">user_12345</span></div>
+            <button id="favorites-btn" class="profile-favorites-btn">Избранное</button>
         </div>
         <div id="favorites-page" style="display:none;">
             <div id="favorites-grid" class="favorites-grid"></div>
@@ -555,9 +559,9 @@
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             Найти
         </button>
-        <button class="nav-btn" data-page="favorites">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
-            Избранное
+        <button class="nav-btn" data-page="profile">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M12 12v8"/></svg>
+            Профиль
         </button>
     </nav>
 
@@ -628,26 +632,6 @@
             });
         }
 
-        function renderFavorites() {
-            const favBlock = document.getElementById('favorites-grid');
-            let favs = JSON.parse(localStorage.getItem('favs') || '[]');
-            console.log('Favorites:', favs); // Для отладки
-            if (!favs.length) {
-                favBlock.innerHTML = '<div class="no-favorites">Нет избранных услуг</div>';
-                return;
-            }
-            favBlock.innerHTML = favs.map(s => `
-                <div class="card">
-                    <img class="card-img" src="${s.img}" alt="${s.name}">
-                    <div class="card-info">
-                        <span class="service-name">${s.name}</span>
-                        <span class="price">${s.price}</span>
-                    </div>
-                </div>
-            `).join('');
-            attachCardClickHandlers(favBlock);
-        }
-
         function openServiceModal(name, price, img, desc) {
             let modal = document.createElement('div');
             modal.className = 'modal-bg';
@@ -700,7 +684,6 @@
                     }
                 }
                 localStorage.setItem('favs', JSON.stringify(favs));
-                renderFavorites();
             };
             
             closeBtn.onclick = () => {
@@ -732,61 +715,93 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const navBtns = document.querySelectorAll('.nav-btn');
-            const pages = {
-                catalog: document.getElementById('catalog-page'),
-                search: document.getElementById('search-page'),
-                favorites: document.getElementById('favorites-page')
-            };
-            
-            function showPage(page) {
-                Object.values(pages).forEach(p => p.style.display = 'none');
-                pages[page].style.display = 'block'; // Изменил на 'block' для гарантированного отображения
-                navBtns.forEach(btn => btn.classList.remove('active'));
-                document.querySelector(`.nav-btn[data-page="${page}"]`).classList.add('active');
-                if (page === 'search') {
-                    renderRecentQueries();
-                } else if (page === 'favorites') {
-                    renderFavorites();
-                }
+        function renderFavorites() {
+            const favBlock = document.getElementById('favorites-grid');
+            let favs = JSON.parse(localStorage.getItem('favs') || '[]');
+            if (!favs.length) {
+                favBlock.innerHTML = '<div class="no-favorites">Нет избранных услуг</div>';
+                return;
             }
-            
-            navBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    showPage(this.dataset.page);
-                });
+            favBlock.innerHTML = favs.map(s => `
+                <div class="card">
+                    <img class="card-img" src="${s.img}" alt="${s.name}">
+                    <div class="card-info">
+                        <span class="service-name">${s.name}</span>
+                        <span class="price">${s.price}</span>
+                    </div>
+                </div>
+            `).join('');
+            attachCardClickHandlers(favBlock);
+        }
+
+        const navBtns = document.querySelectorAll('.nav-btn');
+        const pages = {
+            catalog: document.getElementById('catalog-page'),
+            search: document.getElementById('search-page'),
+            profile: document.getElementById('profile-page'),
+            favorites: document.getElementById('favorites-page')
+        };
+        
+        function showPage(page) {
+            Object.values(pages).forEach(p => p.style.display = 'none');
+            pages[page].style.display = 'block';
+            navBtns.forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`.nav-btn[data-page="${page === 'favorites' ? 'profile' : page}"]`).classList.add('active');
+            if (page === 'search') {
+                renderRecentQueries();
+            } else if (page === 'favorites') {
+                renderFavorites();
+            }
+        }
+        
+        navBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                showPage(this.dataset.page);
             });
-            
-            showPage('catalog');
-            
-            const searchInput = document.getElementById('search-input');
-            if (searchInput) {
-                searchInput.addEventListener('input', function() {
-                    renderSearchResults(this.value);
-                });
-                searchInput.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter') {
-                        saveRecentQuery(this.value);
-                    }
-                });
-            }
-            
-            const searchBtn = document.getElementById('search-btn');
-            if (searchBtn) {
-                searchBtn.addEventListener('click', function() {
-                    saveRecentQuery(searchInput.value);
-                });
-            }
-            
-            attachCardClickHandlers(document.getElementById('catalog-page'));
-            
-            const origRenderSearchResults = renderSearchResults;
-            renderSearchResults = function(query) {
-                origRenderSearchResults(query);
-                attachCardClickHandlers(document.getElementById('search-results'));
-            }
         });
+        
+        showPage('catalog');
+        
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                renderSearchResults(this.value);
+            });
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    saveRecentQuery(this.value);
+                }
+            });
+        }
+        
+        const searchBtn = document.getElementById('search-btn');
+        if (searchBtn) {
+            searchBtn.addEventListener('click', function() {
+                saveRecentQuery(searchInput.value);
+            });
+        }
+        
+        attachCardClickHandlers(document.getElementById('catalog-page'));
+        
+        const origRenderSearchResults = renderSearchResults;
+        renderSearchResults = function(query) {
+            origRenderSearchResults(query);
+            attachCardClickHandlers(document.getElementById('search-results'));
+        }
+
+        // Генерация уникального ID пользователя
+        function generateUserId() {
+            return 'user_' + Math.random().toString(36).substr(2, 9);
+        }
+        let userId = localStorage.getItem('userId') || generateUserId();
+        localStorage.setItem('userId', userId);
+        document.getElementById('user-id').textContent = userId;
+
+        // Обработчик кнопки "Избранное" в профиле
+        const favoritesBtn = document.getElementById('favorites-btn');
+        if (favoritesBtn) {
+            favoritesBtn.addEventListener('click', () => showPage('favorites'));
+        }
     </script>
 </body>
 </html>
