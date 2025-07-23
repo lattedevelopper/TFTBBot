@@ -99,7 +99,7 @@
             padding: 0;
             box-sizing: border-box;
             width: 100%;
-            max-width: 400px;
+            max-width: 420px;
         }
         .card {
             background: var(--card-dark);
@@ -387,17 +387,30 @@
             width: 20px; height: 20px;
             vertical-align: middle;
         }
-        #fav-page {
+        #favorites-page {
+            display: none;
+            width: 100%;
+            min-height: calc(100vh - 152px);
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: calc(100vh - 152px);
+            flex-direction: column;
+            padding: 12px;
+            box-sizing: border-box;
         }
-        #fav-page div {
-            text-align: center;
+        #favorites-page .favorites-grid {
             width: 100%;
-            padding: 24px 0 0 0;
+            max-width: 420px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px;
+            margin-top: 20px;
+        }
+        #favorites-page .no-favorites {
+            text-align: center;
             color: var(--text-secondary);
+            font-size: 1.1rem;
+            padding: 20px;
         }
         @media (max-width: 500px) {
             .card {
@@ -432,7 +445,7 @@
             .nav-btn {
                 font-size: 0.76rem;
             }
-            .catalog {
+            #favorites-page .favorites-grid {
                 max-width: 340px;
             }
         }
@@ -456,10 +469,7 @@
                 width: 18px;
                 height: 18px;
             }
-            .search-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .catalog {
+            #favorites-page .favorites-grid {
                 max-width: 420px;
             }
         }
@@ -537,8 +547,8 @@
             <div id="recent-queries" style="margin-bottom:18px;display:flex;flex-wrap:wrap;gap:8px;"></div>
             <div id="search-results"></div>
         </div>
-        <div id="fav-page" style="display:none;">
-            <div id="fav-results" class="catalog"></div>
+        <div id="favorites-page" style="display:none;">
+            <div id="favorites-grid" class="favorites-grid"></div>
         </div>
     </div>
     <nav class="bottom-nav">
@@ -550,7 +560,7 @@
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             Найти
         </button>
-        <button class="nav-btn" data-page="fav">
+        <button class="nav-btn" data-page="favorites">
             <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             Избранное
         </button>
@@ -624,22 +634,21 @@
         }
 
         function renderFavorites() {
-            const favBlock = document.getElementById('fav-results');
+            const favBlock = document.getElementById('favorites-grid');
             let favs = JSON.parse(localStorage.getItem('favs') || '[]');
             if (!favs.length) {
-                favBlock.innerHTML = '<div style="color:var(--text-secondary);padding:24px 0 0 0;text-align:center;">Нет избранных услуг</div>';
+                favBlock.innerHTML = '<div class="no-favorites">Нет избранных услуг</div>';
                 return;
             }
-            favBlock.innerHTML = `<div class="catalog">` +
-                favs.map(s => `
-                    <div class="card">
-                        <img class="card-img" src="${s.img}" alt="${s.name}">
-                        <div class="card-info">
-                            <span class="service-name">${s.name}</span>
-                            <span class="price">${s.price}</span>
-                        </div>
+            favBlock.innerHTML = favs.map(s => `
+                <div class="card">
+                    <img class="card-img" src="${s.img}" alt="${s.name}">
+                    <div class="card-info">
+                        <span class="service-name">${s.name}</span>
+                        <span class="price">${s.price}</span>
                     </div>
-                `).join('') + `</div>`;
+                </div>
+            `).join('');
             attachCardClickHandlers(favBlock);
         }
 
@@ -695,6 +704,7 @@
                     }
                 }
                 localStorage.setItem('favs', JSON.stringify(favs));
+                renderFavorites();
             };
             
             closeBtn.onclick = () => {
@@ -731,7 +741,7 @@
             const pages = {
                 catalog: document.getElementById('catalog-page'),
                 search: document.getElementById('search-page'),
-                fav: document.getElementById('fav-page')
+                favorites: document.getElementById('favorites-page')
             };
             
             function showPage(page) {
@@ -741,7 +751,7 @@
                 document.querySelector(`.nav-btn[data-page="${page}"]`).classList.add('active');
                 if (page === 'search') {
                     renderRecentQueries();
-                } else if (page === 'fav') {
+                } else if (page === 'favorites') {
                     renderFavorites();
                 }
             }
