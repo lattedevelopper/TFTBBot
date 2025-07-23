@@ -346,10 +346,6 @@
             margin: 0 auto 16px auto;
             display: block;
             cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .profile-avatar:hover {
-            transform: scale(1.05);
         }
         .profile-user-id {
             color: var(--text-secondary);
@@ -357,7 +353,7 @@
             margin-bottom: 20px;
         }
         .profile-favorites-btn {
-            background: none;
+            background: var(--card-dark);
             border: none;
             color: var(--main-green);
             font-size: 1.05rem;
@@ -385,12 +381,6 @@
             gap: 14px;
             justify-content: center;
         }
-        #favorites-page .no-favorites {
-            text-align: center;
-            color: var(--text-secondary);
-            font-size: 1.1rem;
-            padding: 20px;
-        }
         #search-page {
             display: none;
             max-width: 420px;
@@ -405,6 +395,21 @@
             justify-items: center;
             margin-top: 16px;
             justify-content: center;
+        }
+        #qr-page {
+            display: none;
+            max-width: 420px;
+            margin: 0 auto;
+            padding: 12px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        #qr-page .qr-code {
+            margin: 20px auto;
+        }
+        #qr-page .qr-code img {
+            max-width: 200px;
+            border: 1px solid var(--text-secondary);
         }
         @media (max-width: 500px) {
             .card {
@@ -542,12 +547,18 @@
             <div id="search-results"></div>
         </div>
         <div id="profile-page" style="display:none;">
-            <img id="profile-avatar" class="profile-avatar" src="https://via.placeholder.com/120?text=Аватар" alt="Аватар">
+            <img id="profile-avatar" class="profile-avatar" src="" alt="Аватар">
             <div id="profile-user-id" class="profile-user-id">ID: <span id="user-id">user_12345</span></div>
             <button id="favorites-btn" class="profile-favorites-btn">Избранное</button>
+            <input type="file" id="avatar-upload" style="display:none;" accept="image/*">
         </div>
         <div id="favorites-page" style="display:none;">
             <div id="favorites-grid" class="favorites-grid"></div>
+        </div>
+        <div id="qr-page" style="display:none;">
+            <h3>Ваш QR-код</h3>
+            <div class="qr-code" id="user-qr"></div>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">Сохраните этот QR-код и покажите администратору для использования.</p>
         </div>
     </div>
     <nav class="bottom-nav">
@@ -560,11 +571,23 @@
             Найти
         </button>
         <button class="nav-btn" data-page="profile">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M12 12v8"/></svg>
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
             Профиль
+        </button>
+        <button class="nav-btn" data-page="qr">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <rect x="3" y="3" width="6" height="6"/>
+                <rect x="15" y="3" width="6" height="6"/>
+                <rect x="3" y="15" width="6" height="6"/>
+                <rect x="15" y="15" width="6" height="6"/>
+            </svg>
+            QR-код
         </button>
     </nav>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
         const SERVICES = [
             { name: 'Стрижка', price: '1000 ₽', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=400&q=80' },
@@ -719,7 +742,7 @@
             const favBlock = document.getElementById('favorites-grid');
             let favs = JSON.parse(localStorage.getItem('favs') || '[]');
             if (!favs.length) {
-                favBlock.innerHTML = '<div class="no-favorites">Нет избранных услуг</div>';
+                favBlock.innerHTML = '';
                 return;
             }
             favBlock.innerHTML = favs.map(s => `
@@ -739,7 +762,8 @@
             catalog: document.getElementById('catalog-page'),
             search: document.getElementById('search-page'),
             profile: document.getElementById('profile-page'),
-            favorites: document.getElementById('favorites-page')
+            favorites: document.getElementById('favorites-page'),
+            qr: document.getElementById('qr-page')
         };
         
         function showPage(page) {
@@ -751,6 +775,8 @@
                 renderRecentQueries();
             } else if (page === 'favorites') {
                 renderFavorites();
+            } else if (page === 'qr') {
+                generateQRCode();
             }
         }
         
@@ -789,7 +815,7 @@
             attachCardClickHandlers(document.getElementById('search-results'));
         }
 
-        // Генерация уникального ID пользователя
+        // Генерация и отображение уникального ID пользователя
         function generateUserId() {
             return 'user_' + Math.random().toString(36).substr(2, 9);
         }
@@ -801,6 +827,57 @@
         const favoritesBtn = document.getElementById('favorites-btn');
         if (favoritesBtn) {
             favoritesBtn.addEventListener('click', () => showPage('favorites'));
+        }
+
+        // Обработка аватарки
+        const avatar = document.getElementById('profile-avatar');
+        const avatarUpload = document.getElementById('avatar-upload');
+
+        // Загрузка сохранённого аватара при старте
+        function loadAvatar() {
+            const savedAvatar = localStorage.getItem('avatarData');
+            if (savedAvatar) {
+                avatar.src = savedAvatar;
+            } else {
+                avatar.src = 'https://via.placeholder.com/120?text=Аватар';
+            }
+        }
+        loadAvatar();
+
+        // Обработка клика по аватарке для загрузки нового изображения
+        if (avatar && avatarUpload) {
+            avatar.addEventListener('click', () => avatarUpload.click());
+
+            avatarUpload.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        const base64String = event.target.result;
+                        avatar.src = base64String;
+                        localStorage.setItem('avatarData', base64String); // Сохраняем base64 в localStorage
+                    };
+                    reader.readAsDataURL(file);
+                    avatarUpload.value = ''; // Сбрасываем input
+                }
+            });
+        }
+
+        // Генерация QR-кода
+        function generateQRCode() {
+            const qrDiv = document.getElementById('user-qr');
+            qrDiv.innerHTML = '';
+            new QRCode(qrDiv, {
+                text: userId,
+                width: 200,
+                height: 200,
+                colorDark: '#000000',
+                colorLight: '#ffffff'
+            });
+        }
+        // Генерируем QR-код при первой загрузке страницы
+        if (document.getElementById('qr-page').style.display !== 'none') {
+            generateQRCode();
         }
     </script>
 </body>
