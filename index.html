@@ -414,7 +414,6 @@
             padding: 20px;
             text-align: center;
             box-shadow: 0 8px 32px rgba(0,0,0,0.18);
-            position: relative;
         }
         #bonus-modal .close-btn {
             background: none;
@@ -455,6 +454,10 @@
         }
         #bonus-modal button:hover {
             background: var(--main-green-dark);
+        }
+        #bonus-result {
+            color: var(--text-main);
+            margin-top: 10px;
         }
         @media (max-width: 500px) {
             .card {
@@ -907,12 +910,11 @@
         // Обработка кнопки "QR-код" и модального окна для бонусов
         const qrBtn = document.getElementById('qr-btn');
         const bonusModalBg = document.getElementById('bonus-modal-bg');
-        const bonusDiv = document.getElementById('user-qr');
+        const bonusDiv = document.getElementById('bonus-modal').querySelector('#user-qr');
 
         function generateQRCode() {
-            const baseUrl = window.location.origin + '/bonus'; // Используем текущий домен
+            const baseUrl = 'http://localhost:3000/bonus'; // Замени на реальный URL
             const qrUrl = `${baseUrl}?userId=${userId}`;
-            bonusDiv.innerHTML = '';
             new QRCode(bonusDiv, {
                 text: qrUrl,
                 width: 200,
@@ -923,15 +925,16 @@
         }
 
         function showBonusModal() {
-            generateQRCode();
             bonusModalBg.style.display = 'flex';
             document.getElementById('bonus-amount').value = '';
             document.getElementById('admin-password').value = '';
             document.getElementById('bonus-result').textContent = '';
+            generateQRCode(); // Генерируем QR-код при открытии модального окна
         }
 
         function closeBonusModal() {
             bonusModalBg.style.display = 'none';
+            bonusDiv.innerHTML = ''; // Очищаем QR-код при закрытии
         }
 
         function addBonus() {
@@ -962,4 +965,11 @@
         }
 
         if (qrBtn) {
-            qrBtn.addEventListener('click', showBonus
+            qrBtn.addEventListener('click', showBonusModal);
+        }
+        bonusModalBg.addEventListener('click', (e) => {
+            if (e.target === bonusModalBg) closeBonusModal();
+        });
+    </script>
+</body>
+</html>
