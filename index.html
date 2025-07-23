@@ -26,7 +26,7 @@
         .container {
             max-width: 800px;
             margin: 40px auto;
-            padding: 16px;
+            padding: 12px;
             box-sizing: border-box;
         }
         .banner-carousel {
@@ -93,7 +93,7 @@
         .catalog {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
+            gap: 14px;
             justify-items: center;
             justify-content: center;
             padding: 0;
@@ -138,7 +138,7 @@
             color: var(--text-main);
             text-align: left;
             font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
-            white-space: nowrap;
+            word-wrap: break-word;
             overflow: hidden;
             text-overflow: ellipsis;
             margin-bottom: 6px;
@@ -212,7 +212,7 @@
         .search-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
+            gap: 14px;
             justify-items: center;
             margin-top: 16px;
             justify-content: center;
@@ -226,7 +226,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.2s;
+            transition: opacity 0.3s ease-in-out;
         }
         .modal {
             background: var(--card-dark);
@@ -237,7 +237,7 @@
             box-shadow: 0 8px 32px rgba(0,0,0,0.18);
             color: var(--text-main);
             position: relative;
-            animation: modalIn 0.18s ease-out;
+            animation: modalIn 0.3s ease-in-out;
             box-sizing: border-box;
         }
         @keyframes modalIn {
@@ -249,7 +249,7 @@
             to { transform: translateY(40px) scale(0.97); opacity: 0; }
         }
         .modal.closing {
-            animation: modalOut 0.18s ease-out forwards;
+            animation: modalOut 0.3s ease-in-out forwards;
         }
         .modal-img {
             width: 100%;
@@ -318,7 +318,6 @@
             width: 18px;
             height: 18px;
             display: block;
-            transition: transform 0.3s ease;
         }
         .modal-fav-btn {
             display: flex;
@@ -413,7 +412,8 @@
                 min-height: 76px;
             }
             .service-name {
-                font-size: 0.95rem;
+                font-size: 0.96rem;
+                word-wrap: break-word;
             }
             .price {
                 font-size: 0.92rem;
