@@ -25,7 +25,7 @@
         }
         .container {
             max-width: 800px;
-            margin: 40px auto;
+            margin: 0 auto;
             padding: 12px;
             box-sizing: border-box;
         }
@@ -99,6 +99,7 @@
             padding: 0;
             box-sizing: border-box;
             width: 100%;
+            max-width: 400px;
         }
         .card {
             background: var(--card-dark);
@@ -386,6 +387,12 @@
             width: 20px; height: 20px;
             vertical-align: middle;
         }
+        #fav-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: calc(100vh - 152px);
+        }
         #fav-page div {
             text-align: center;
             width: 100%;
@@ -425,6 +432,9 @@
             .nav-btn {
                 font-size: 0.76rem;
             }
+            .catalog {
+                max-width: 340px;
+            }
         }
         @media (min-width: 500px) {
             .card {
@@ -448,6 +458,9 @@
             }
             .search-grid {
                 grid-template-columns: repeat(2, 1fr);
+            }
+            .catalog {
+                max-width: 420px;
             }
         }
     </style>
