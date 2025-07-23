@@ -352,7 +352,7 @@
             font-size: 0.9rem;
             margin-bottom: 20px;
         }
-        .profile-favorites-btn {
+        .profile-favorites-btn, .profile-qr-btn {
             background: var(--card-dark);
             border: none;
             color: var(--main-green);
@@ -364,8 +364,9 @@
             padding: 10px;
             border-radius: 8px;
             transition: background 0.2s;
+            margin: 5px 0;
         }
-        .profile-favorites-btn:hover {
+        .profile-favorites-btn:hover, .profile-qr-btn:hover {
             background: rgba(34, 197, 94, 0.1);
         }
         #favorites-page {
@@ -396,20 +397,64 @@
             margin-top: 16px;
             justify-content: center;
         }
-        #qr-page {
+        #bonus-modal-bg {
             display: none;
-            max-width: 420px;
-            margin: 0 auto;
-            padding: 12px;
-            box-sizing: border-box;
+            position: fixed;
+            left: 0; top: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.55);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        #bonus-modal {
+            background: var(--card-dark);
+            border-radius: 18px;
+            max-width: 300px;
+            width: 90vw;
+            padding: 20px;
             text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+            position: relative;
         }
-        #qr-page .qr-code {
-            margin: 20px auto;
+        #bonus-modal .close-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
         }
-        #qr-page .qr-code img {
+        #bonus-modal .qr-code {
+            margin-bottom: 20px;
+        }
+        #bonus-modal .qr-code img {
             max-width: 200px;
             border: 1px solid var(--text-secondary);
+        }
+        #bonus-modal input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid var(--text-secondary);
+            border-radius: 8px;
+            background: #2d2d30;
+            color: var(--text-main);
+            font-size: 1rem;
+        }
+        #bonus-modal button {
+            background: var(--main-green);
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+        }
+        #bonus-modal button:hover {
+            background: var(--main-green-dark);
         }
         @media (max-width: 500px) {
             .card {
@@ -550,15 +595,11 @@
             <img id="profile-avatar" class="profile-avatar" src="" alt="Аватар">
             <div id="profile-user-id" class="profile-user-id">ID: <span id="user-id">user_12345</span></div>
             <button id="favorites-btn" class="profile-favorites-btn">Избранное</button>
+            <button id="qr-btn" class="profile-qr-btn">QR-код</button>
             <input type="file" id="avatar-upload" style="display:none;" accept="image/*">
         </div>
         <div id="favorites-page" style="display:none;">
             <div id="favorites-grid" class="favorites-grid"></div>
-        </div>
-        <div id="qr-page" style="display:none;">
-            <h3>Ваш QR-код</h3>
-            <div class="qr-code" id="user-qr"></div>
-            <p style="color: var(--text-secondary); font-size: 0.9rem;">Сохраните этот QR-код и покажите администратору для использования.</p>
         </div>
     </div>
     <nav class="bottom-nav">
@@ -576,16 +617,19 @@
             </svg>
             Профиль
         </button>
-        <button class="nav-btn" data-page="qr">
-            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <rect x="3" y="3" width="6" height="6"/>
-                <rect x="15" y="3" width="6" height="6"/>
-                <rect x="3" y="15" width="6" height="6"/>
-                <rect x="15" y="15" width="6" height="6"/>
-            </svg>
-            QR-код
-        </button>
     </nav>
+
+    <div id="bonus-modal-bg">
+        <div id="bonus-modal">
+            <button class="close-btn" onclick="closeBonusModal()">×</button>
+            <h3 style="color: var(--text-main); margin-bottom: 20px;">Начисление бонусов</h3>
+            <div class="qr-code" id="user-qr"></div>
+            <input type="number" id="bonus-amount" placeholder="Количество бонусов" min="1">
+            <input type="password" id="admin-password" placeholder="Пароль администратора">
+            <button onclick="addBonus()">Подтвердить</button>
+            <div id="bonus-result" style="color: var(--text-main); margin-top: 10px;"></div>
+        </div>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script>
@@ -762,8 +806,7 @@
             catalog: document.getElementById('catalog-page'),
             search: document.getElementById('search-page'),
             profile: document.getElementById('profile-page'),
-            favorites: document.getElementById('favorites-page'),
-            qr: document.getElementById('qr-page')
+            favorites: document.getElementById('favorites-page')
         };
         
         function showPage(page) {
@@ -775,8 +818,6 @@
                 renderRecentQueries();
             } else if (page === 'favorites') {
                 renderFavorites();
-            } else if (page === 'qr') {
-                generateQRCode();
             }
         }
         
@@ -855,30 +896,70 @@
                     reader.onload = (event) => {
                         const base64String = event.target.result;
                         avatar.src = base64String;
-                        localStorage.setItem('avatarData', base64String); // Сохраняем base64 в localStorage
+                        localStorage.setItem('avatarData', base64String);
                     };
                     reader.readAsDataURL(file);
-                    avatarUpload.value = ''; // Сбрасываем input
+                    avatarUpload.value = '';
                 }
             });
         }
 
-        // Генерация QR-кода
+        // Обработка кнопки "QR-код" и модального окна для бонусов
+        const qrBtn = document.getElementById('qr-btn');
+        const bonusModalBg = document.getElementById('bonus-modal-bg');
+        const bonusDiv = document.getElementById('user-qr');
+
         function generateQRCode() {
-            const qrDiv = document.getElementById('user-qr');
-            qrDiv.innerHTML = '';
-            new QRCode(qrDiv, {
-                text: userId,
+            const baseUrl = window.location.origin + '/bonus'; // Используем текущий домен
+            const qrUrl = `${baseUrl}?userId=${userId}`;
+            bonusDiv.innerHTML = '';
+            new QRCode(bonusDiv, {
+                text: qrUrl,
                 width: 200,
                 height: 200,
                 colorDark: '#000000',
                 colorLight: '#ffffff'
             });
         }
-        // Генерируем QR-код при первой загрузке страницы
-        if (document.getElementById('qr-page').style.display !== 'none') {
+
+        function showBonusModal() {
             generateQRCode();
+            bonusModalBg.style.display = 'flex';
+            document.getElementById('bonus-amount').value = '';
+            document.getElementById('admin-password').value = '';
+            document.getElementById('bonus-result').textContent = '';
         }
-    </script>
-</body>
-</html>
+
+        function closeBonusModal() {
+            bonusModalBg.style.display = 'none';
+        }
+
+        function addBonus() {
+            const amount = parseInt(document.getElementById('bonus-amount').value);
+            const password = document.getElementById('admin-password').value;
+            const resultDiv = document.getElementById('bonus-result');
+
+            if (isNaN(amount) || amount <= 0) {
+                resultDiv.textContent = 'Введите корректное количество бонусов!';
+                return;
+            }
+            if (password !== '1467') {
+                resultDiv.textContent = 'Неверный пароль администратора!';
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem('users') || '[]');
+            let user = users.find(u => u.id === userId);
+            if (!user) {
+                user = { id: userId, name: 'User', bonuses: 0, history: [] };
+                users.push(user);
+            }
+            user.bonuses += amount;
+            user.history.push({ date: new Date().toLocaleString(), amount: amount, note: 'За услугу' });
+            localStorage.setItem('users', JSON.stringify(users));
+            resultDiv.textContent = `Бонусы (${amount}) успешно начислены! Общий баланс: ${user.bonuses}`;
+            setTimeout(closeBonusModal, 2000);
+        }
+
+        if (qrBtn) {
+            qrBtn.addEventListener('click', showBonus
