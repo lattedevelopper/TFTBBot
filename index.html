@@ -352,7 +352,7 @@
             font-size: 0.9rem;
             margin-bottom: 20px;
         }
-        .profile-favorites-btn, .profile-qr-btn {
+        .profile-favorites-btn, .profile-qr-btn, .profile-admin-btn {
             background: var(--card-dark);
             border: none;
             color: var(--main-green);
@@ -366,7 +366,7 @@
             transition: background 0.2s;
             margin: 5px 0;
         }
-        .profile-favorites-btn:hover, .profile-qr-btn:hover {
+        .profile-favorites-btn:hover, .profile-qr-btn:hover, .profile-admin-btn:hover {
             background: rgba(34, 197, 94, 0.1);
         }
         #favorites-page {
@@ -397,7 +397,7 @@
             margin-top: 16px;
             justify-content: center;
         }
-        #bonus-modal-bg {
+        #admin-modal-bg {
             display: none;
             position: fixed;
             left: 0; top: 0; right: 0; bottom: 0;
@@ -406,7 +406,7 @@
             align-items: center;
             justify-content: center;
         }
-        #bonus-modal {
+        #admin-modal {
             background: var(--card-dark);
             border-radius: 18px;
             max-width: 300px;
@@ -415,7 +415,7 @@
             text-align: center;
             box-shadow: 0 8px 32px rgba(0,0,0,0.18);
         }
-        #bonus-modal .close-btn {
+        #admin-modal .close-btn {
             background: none;
             border: none;
             color: #fff;
@@ -425,14 +425,7 @@
             top: 10px;
             right: 10px;
         }
-        #bonus-modal .qr-code {
-            margin-bottom: 20px;
-        }
-        #bonus-modal .qr-code img {
-            max-width: 200px;
-            border: 1px solid var(--text-secondary);
-        }
-        #bonus-modal input {
+        #admin-modal input {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
@@ -442,7 +435,7 @@
             color: var(--text-main);
             font-size: 1rem;
         }
-        #bonus-modal button {
+        #admin-modal button {
             background: var(--main-green);
             color: #fff;
             border: none;
@@ -452,10 +445,10 @@
             width: 100%;
             margin-top: 10px;
         }
-        #bonus-modal button:hover {
+        #admin-modal button:hover {
             background: var(--main-green-dark);
         }
-        #bonus-result {
+        #admin-result {
             color: var(--text-main);
             margin-top: 10px;
         }
@@ -599,6 +592,7 @@
             <div id="profile-user-id" class="profile-user-id">ID: <span id="user-id">user_12345</span></div>
             <button id="favorites-btn" class="profile-favorites-btn">Избранное</button>
             <button id="qr-btn" class="profile-qr-btn">QR-код</button>
+            <button id="admin-btn" class="profile-admin-btn">Админ</button>
             <input type="file" id="avatar-upload" style="display:none;" accept="image/*">
         </div>
         <div id="favorites-page" style="display:none;">
@@ -622,15 +616,21 @@
         </button>
     </nav>
 
-    <div id="bonus-modal-bg">
-        <div id="bonus-modal">
-            <button class="close-btn" onclick="closeBonusModal()">×</button>
-            <h3 style="color: var(--text-main); margin-bottom: 20px;">Начисление бонусов</h3>
-            <div class="qr-code" id="user-qr"></div>
-            <input type="number" id="bonus-amount" placeholder="Количество бонусов" min="1">
+    <div id="admin-modal-bg">
+        <div id="admin-modal">
+            <button class="close-btn" onclick="closeAdminModal()">×</button>
+            <h3 style="color: var(--text-main); margin-bottom: 20px;">Вход в админ-панель</h3>
             <input type="password" id="admin-password" placeholder="Пароль администратора">
-            <button onclick="addBonus()">Подтвердить</button>
-            <div id="bonus-result" style="color: var(--text-main); margin-top: 10px;"></div>
+            <button onclick="checkAdminPassword()">Войти</button>
+            <div id="admin-result" style="color: var(--text-main); margin-top: 10px;"></div>
+        </div>
+    </div>
+
+    <div id="qr-modal-bg">
+        <div id="qr-modal">
+            <button class="close-btn" onclick="closeQRModal()">×</button>
+            <div class="qr-code" id="user-qr"></div>
+            <p style="color: var(--text-secondary); font-size: 0.9rem;">Сохраните этот QR-код и покажите администратору.</p>
         </div>
     </div>
 
@@ -907,15 +907,16 @@
             });
         }
 
-        // Обработка кнопки "QR-код" и модального окна для бонусов
+        // Обработка кнопки "QR-код" и модального окна
         const qrBtn = document.getElementById('qr-btn');
-        const bonusModalBg = document.getElementById('bonus-modal-bg');
-        const bonusDiv = document.getElementById('bonus-modal').querySelector('#user-qr');
+        const qrModalBg = document.getElementById('qr-modal-bg');
+        const qrDiv = document.getElementById('user-qr');
 
         function generateQRCode() {
-            const baseUrl = 'http://localhost:3000/bonus'; // Замени на реальный URL
+            const baseUrl = window.location.origin + '/bonus.html'; // Используем относительный путь
             const qrUrl = `${baseUrl}?userId=${userId}`;
-            new QRCode(bonusDiv, {
+            qrDiv.innerHTML = '';
+            new QRCode(qrDiv, {
                 text: qrUrl,
                 width: 200,
                 height: 200,
@@ -924,51 +925,52 @@
             });
         }
 
-        function showBonusModal() {
-            bonusModalBg.style.display = 'flex';
-            document.getElementById('bonus-amount').value = '';
-            document.getElementById('admin-password').value = '';
-            document.getElementById('bonus-result').textContent = '';
-            generateQRCode(); // Генерируем QR-код при открытии модального окна
+        function showQRModal() {
+            generateQRCode();
+            qrModalBg.style.display = 'flex';
         }
 
-        function closeBonusModal() {
-            bonusModalBg.style.display = 'none';
-            bonusDiv.innerHTML = ''; // Очищаем QR-код при закрытии
-        }
-
-        function addBonus() {
-            const amount = parseInt(document.getElementById('bonus-amount').value);
-            const password = document.getElementById('admin-password').value;
-            const resultDiv = document.getElementById('bonus-result');
-
-            if (isNaN(amount) || amount <= 0) {
-                resultDiv.textContent = 'Введите корректное количество бонусов!';
-                return;
-            }
-            if (password !== '1467') {
-                resultDiv.textContent = 'Неверный пароль администратора!';
-                return;
-            }
-
-            let users = JSON.parse(localStorage.getItem('users') || '[]');
-            let user = users.find(u => u.id === userId);
-            if (!user) {
-                user = { id: userId, name: 'User', bonuses: 0, history: [] };
-                users.push(user);
-            }
-            user.bonuses += amount;
-            user.history.push({ date: new Date().toLocaleString(), amount: amount, note: 'За услугу' });
-            localStorage.setItem('users', JSON.stringify(users));
-            resultDiv.textContent = `Бонусы (${amount}) успешно начислены! Общий баланс: ${user.bonuses}`;
-            setTimeout(closeBonusModal, 2000);
+        function closeQRModal() {
+            qrModalBg.style.display = 'none';
         }
 
         if (qrBtn) {
-            qrBtn.addEventListener('click', showBonusModal);
+            qrBtn.addEventListener('click', showQRModal);
         }
-        bonusModalBg.addEventListener('click', (e) => {
-            if (e.target === bonusModalBg) closeBonusModal();
+        qrModalBg.addEventListener('click', (e) => {
+            if (e.target === qrModalBg) closeQRModal();
+        });
+
+        // Обработка кнопки "Админ" и модального окна для входа
+        const adminBtn = document.getElementById('admin-btn');
+        const adminModalBg = document.getElementById('admin-modal-bg');
+
+        function showAdminModal() {
+            adminModalBg.style.display = 'flex';
+            document.getElementById('admin-password').value = '';
+            document.getElementById('admin-result').textContent = '';
+        }
+
+        function closeAdminModal() {
+            adminModalBg.style.display = 'none';
+        }
+
+        function checkAdminPassword() {
+            const password = document.getElementById('admin-password').value;
+            const resultDiv = document.getElementById('admin-result');
+            if (password === '1467') {
+                closeAdminModal();
+                window.location.href = `admin.html?userId=${userId}`;
+            } else {
+                resultDiv.textContent = 'Неверный пароль!';
+            }
+        }
+
+        if (adminBtn) {
+            adminBtn.addEventListener('click', showAdminModal);
+        }
+        adminModalBg.addEventListener('click', (e) => {
+            if (e.target === adminModalBg) closeAdminModal();
         });
     </script>
 </body>
