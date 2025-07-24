@@ -15,6 +15,7 @@
             --text-secondary: #a1a1aa;
             --nav-bg: #232326;
             --nav-active: #22c55e;
+            --bonus-gradient: linear-gradient(135deg, #22c55e, #3b82f6);
         }
         body {
             font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
@@ -351,7 +352,7 @@
             font-size: 0.9rem;
             margin-bottom: 20px;
         }
-        .profile-favorites-btn, .profile-admin-btn {
+        .profile-favorites-btn, .profile-admin-btn, .profile-bonuses-btn {
             background: var(--card-dark);
             border: none;
             color: var(--main-green);
@@ -365,7 +366,7 @@
             transition: background 0.2s;
             margin: 5px 0;
         }
-        .profile-favorites-btn:hover, .profile-admin-btn:hover {
+        .profile-favorites-btn:hover, .profile-admin-btn:hover, .profile-bonuses-btn:hover {
             background: rgba(34, 197, 94, 0.1);
         }
         #favorites-page {
@@ -563,6 +564,9 @@
             .modal-img {
                 height: 160px;
             }
+            #bonuses-page .bonus-card {
+                max-width: 300px;
+            }
         }
         @media (min-width: 500px) {
             .card {
@@ -666,11 +670,19 @@
             <img id="profile-avatar" class="profile-avatar" src="" alt="Аватар">
             <div id="profile-user-id" class="profile-user-id">ID: <span id="user-id">user_12345</span></div>
             <button id="favorites-btn" class="profile-favorites-btn">Избранное</button>
+            <button id="bonuses-btn" class="profile-bonuses-btn">Бонусы</button>
             <button id="admin-btn" class="profile-admin-btn">Админ</button>
             <input type="file" id="avatar-upload" style="display:none;" accept="image/*">
         </div>
         <div id="favorites-page" style="display:none;">
             <div id="favorites-grid" class="favorites-grid"></div>
+        </div>
+        <div id="bonuses-page" style="display:none;">
+            <div class="bonus-card">
+                <h2 style="margin: 0 0 10px 0; font-size: 1.5rem; color: var(--text-main);">Ваши бонусы</h2>
+                <div id="bonus-counter" style="font-size: 2.5rem; color: #fff; font-weight: 700; background: var(--bonus-gradient); padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3); text-align: center; margin-bottom: 15px;">0 ₽</div>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; text-align: center;">Сумма всех полученных бонусов</p>
+            </div>
         </div>
     </div>
     <nav class="bottom-nav">
@@ -831,6 +843,7 @@
                     }
                 }
                 localStorage.setItem('favs', JSON.stringify(favs));
+                renderFavorites();
             };
             
             modal.onclick = (e) => {
@@ -860,7 +873,7 @@
             const favBlock = document.getElementById('favorites-grid');
             let favs = JSON.parse(localStorage.getItem('favs') || '[]');
             if (!favs.length) {
-                favBlock.innerHTML = '';
+                favBlock.innerHTML = '<div style="color:var(--text-secondary);padding:24px 0 0 0;text-align:center;">Нет избранного</div>';
                 return;
             }
             favBlock.innerHTML = favs.map(s => `
@@ -880,18 +893,21 @@
             catalog: document.getElementById('catalog-page'),
             search: document.getElementById('search-page'),
             profile: document.getElementById('profile-page'),
-            favorites: document.getElementById('favorites-page')
+            favorites: document.getElementById('favorites-page'),
+            bonuses: document.getElementById('bonuses-page')
         };
         
         function showPage(page) {
             Object.values(pages).forEach(p => p.style.display = 'none');
             pages[page].style.display = 'block';
             navBtns.forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`.nav-btn[data-page="${page === 'favorites' ? 'profile' : page}"]`).classList.add('active');
+            document.querySelector(`.nav-btn[data-page="${page === 'favorites' || page === 'bonuses' ? 'profile' : page}"]`).classList.add('active');
             if (page === 'search') {
                 renderRecentQueries();
             } else if (page === 'favorites') {
                 renderFavorites();
+            } else if (page === 'bonuses') {
+                updateBonusCounter();
             }
         }
         
@@ -930,18 +946,38 @@
             attachCardClickHandlers(document.getElementById('search-results'));
         }
 
-        // Генерация и отображение уникального ID пользователя
+        // Генерация уникального 6-значного userId из цифр и букв
         function generateUserId() {
-            return 'user_' + Math.random().toString(36).substr(2, 9);
+            const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+            let id;
+            do {
+                id = Array(6)
+                    .fill()
+                    .map(() => chars.charAt(Math.floor(Math.random() * chars.length)))
+                    .join('');
+            } while (localStorage.getItem(`user_${id}`)); // Проверяем уникальность
+            localStorage.setItem(`user_${id}`, '1'); // Отмечаем как использованный
+            return id;
         }
-        let userId = localStorage.getItem('userId') || generateUserId();
-        localStorage.setItem('userId', userId);
+
+        // Установка userId при загрузке
+        let userId = localStorage.getItem('userId');
+        if (!userId) {
+            userId = generateUserId();
+            localStorage.setItem('userId', userId);
+        }
         document.getElementById('user-id').textContent = userId;
 
         // Обработчик кнопки "Избранное" в профиле
         const favoritesBtn = document.getElementById('favorites-btn');
         if (favoritesBtn) {
             favoritesBtn.addEventListener('click', () => showPage('favorites'));
+        }
+
+        // Обработчик кнопки "Бонусы" в профиле
+        const bonusesBtn = document.getElementById('bonuses-btn');
+        if (bonusesBtn) {
+            bonusesBtn.addEventListener('click', () => showPage('bonuses'));
         }
 
         // Обработка аватарки
@@ -1018,6 +1054,19 @@
         adminModalBg.addEventListener('click', (e) => {
             if (e.target === adminModalBg) closeAdminModal();
         });
+
+        // Функция обновления счетчика бонусов
+        function updateBonusCounter() {
+            let history = JSON.parse(localStorage.getItem('bonusHistory') || '[]');
+            const userId = localStorage.getItem('userId');
+            const userBonuses = history
+                .filter(item => item.userId === userId)
+                .reduce((sum, item) => sum + parseInt(item.amount), 0);
+            document.getElementById('bonus-counter').textContent = `${userBonuses} ₽`;
+        }
+
+        // Инициализация счетчика при загрузке
+        window.addEventListener('load', updateBonusCounter);
     </script>
 </body>
 </html>
