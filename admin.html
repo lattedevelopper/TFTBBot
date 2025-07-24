@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Админ-панель</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --main-green: #22c55e;
+            --main-green-dark: #16a34a;
+            --bg-dark: #18181b;
+            --card-dark: #232326;
+            --text-main: #f3f4f6;
+            --text-secondary: #a1a1aa;
+        }
+        body {
+            font-family: 'Montserrat', 'Segoe UI', Arial, sans-serif;
+            background: var(--bg-dark);
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: var(--card-dark);
+            border-radius: 18px;
+            max-width: 300px;
+            width: 90vw;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        }
+        h2 {
+            color: var(--text-main);
+            margin-bottom: 20px;
+        }
+        .user-info {
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid var(--text-secondary);
+            border-radius: 8px;
+            background: #2d2d30;
+            color: var(--text-main);
+            font-size: 1rem;
+        }
+        button {
+            background: var(--main-green);
+            color: #fff;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 5px;
+        }
+        button:hover {
+            background: var(--main-green-dark);
+        }
+        #result {
+            color: var(--text-main);
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Админ-панель</h2>
+        <div class="user-info">ID пользователя: <span id="user-id"></span></div>
+        <input type="number" id="bonus-amount" placeholder="Количество бонусов" min="1">
+        <button onclick="addBonus()">Выдать бонусы</button>
+        <button onclick="removeBonus()">Забрать бонусы</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // Получаем userId из URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('userId');
+        document.getElementById('user-id').textContent = userId || 'Не определён';
+
+        function updateBonuses(amount, operation) {
+            if (!userId) {
+                document.getElementById('result').textContent = 'Ошибка: пользователь не идентифицирован!';
+                return;
+            }
+            let users = JSON.parse(localStorage.getItem('users') || '[]');
+            let user = users.find(u => u.id === userId);
+            if (!user) {
+                user = { id: userId, name: 'User', bonuses: 0, history: [] };
+                users.push(user);
+            }
+            if (operation === 'add') {
+                user.bonuses += amount;
+                user.history.push({ date: new Date().toLocaleString(), amount: amount, note: 'Выдача бонусов' });
+            } else if (operation === 'remove') {
+                if (user.bonuses < amount) {
+                    document.getElementById('result').textContent = 'Недостаточно бонусов для снятия!';
+                    return;
+                }
+                user.bonuses -= amount;
+                user.history.push({ date: new Date().toLocaleString(), amount: amount, note: 'Снятие бонусов' });
+            }
+            localStorage.setItem('users', JSON.stringify(users));
+            document.getElementById('result').textContent = `Баланс обновлён! Новый баланс: ${user.bonuses}`;
+            setTimeout(() => {
+                document.getElementById('bonus-amount').value = '';
+                document.getElementById('result').textContent = '';
+            }, 2000);
+        }
+
+        function addBonus() {
+            const amount = parseInt(document.getElementById('bonus-amount').value);
+            if (isNaN(amount) || amount <= 0) {
+                document.getElementById('result').textContent = 'Введите корректное количество бонусов!';
+                return;
+            }
+            updateBonuses(amount, 'add');
+        }
+
+        function removeBonus() {
+            const amount = parseInt(document.getElementById('bonus-amount').value);
+            if (isNaN(amount) || amount <= 0) {
+                document.getElementById('result').textContent = 'Введите корректное количество бонусов!';
+                return;
+            }
+            updateBonuses(amount, 'remove');
+        }
+    </script>
+</body>
+</html>
